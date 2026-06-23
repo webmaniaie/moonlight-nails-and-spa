@@ -1,0 +1,420 @@
+---
+import '../styles/site.css';
+
+const asset = (path: string) =>
+  `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${path}`;
+
+// Three sets are enough to keep both directions continuously covered, while
+// avoiding unnecessary duplicate image decoding during the first page load.
+const galleryRepeats = 3;
+const galleryRows = [
+  {
+    direction: 1,
+    images: [
+      { src: asset('images/nails-gallery/1.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 1', caption: 'Nail set 01' },
+      { src: asset('images/nails-gallery/2.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 2', caption: 'Nail set 02' },
+      { src: asset('images/nails-gallery/3.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 3', caption: 'Nail set 03' },
+      { src: asset('images/nails-gallery/4.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 4', caption: 'Nail set 04' }
+    ]
+  },
+  {
+    direction: -1,
+    images: [
+      { src: asset('images/nails-gallery/5.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 5', caption: 'Nail set 05' },
+      { src: asset('images/nails-gallery/6.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 6', caption: 'Nail set 06' },
+      { src: asset('images/nails-gallery/7.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 7', caption: 'Nail set 07' },
+      { src: asset('images/nails-gallery/8.jpg'), alt: 'Moonlight Nails and Spa — recent nail set 8', caption: 'Nail set 08' }
+    ]
+  }
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moonlight Nails and Spa — Nail Salon in Carlow</title>
+  <meta name="description" content="Moonlight Nails and Spa — a calm, elegant nail salon in Carlow, Ireland. Gel, BIAB, acrylic, manicure, pedicure & bespoke nail art. Book online in seconds." />
+  <meta name="theme-color" content="#fbfaf7" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body style={`--hero-image: url('${asset('images/hero-bg.jpg')}')`}>
+
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ══ NAV / SITE HEADER ════════════════════════════════════════════ -->
+  <header class="site-header" role="banner">
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a class="brand" href="#hero" aria-label="Moonlight Nails and Spa — home">
+      <span class="mark">M</span>
+      <span class="wordmark">Moonlight Nails and Spa<small>Nail Salon</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#location">Visit</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-socials">
+        <a href="https://www.instagram.com/moonlight_nail_spa" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://www.facebook.com/p/Moonlight-nail-spa-100065363355123/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 8h-2a2 2 0 0 0-2 2v12M8 13h6"/><path d="M14 22V10a3 3 0 0 1 3-3"/></svg></a>
+      </div>
+      <a href="#book" class="btn btn-primary" data-book style="padding:11px 22px;">Book Now</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-haspopup="true" aria-controls="mobilePanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <nav class="mobile-panel" id="mobilePanel" aria-label="Mobile navigation" aria-hidden="true" inert>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#location">Visit</a>
+    <a href="#book" class="btn btn-gold" data-book>Book an Appointment</a>
+  </nav>
+  </header>
+
+  <!-- ══ HERO ═════════════════════════════════════════════════════════ -->
+  <div id="hero-backdrop"></div>
+  <canvas id="ink-canvas"></canvas>
+  <canvas id="three-canvas"></canvas>
+  <canvas id="particles-canvas"></canvas>
+
+  <header class="hero" id="hero">
+    <div class="hero-inner" id="heroInner">
+      <div class="eyebrow">Carlow — A Modern Nail Salon</div>
+      <h1>Beautiful nails,<br /><span class="it">quietly perfected.</span></h1>
+      <div class="subhead">— Gel · BIAB · Acrylic · Bespoke Nail Art —</div>
+      <div class="hero-ctas">
+        <a href="#book" class="btn btn-primary" data-book>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+          Book an Appointment
+        </a>
+        <a href="#services" class="btn btn-ghost">Explore Services</a>
+      </div>
+      <div class="hero-status"><span class="dot"></span> Open today · Mon–Sat, by appointment &amp; walk-in</div>
+    </div>
+
+    <!-- Pop-up that zooms in from the gel bottle once the 3D choreography ends -->
+    <div class="hero-pop" id="heroPop" aria-hidden="true">
+      Beautiful nails,<br /><span class="it">quietly perfected.</span>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <span class="line"></span>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════════════════ -->
+  <main id="main">
+
+    <!-- ── ABOUT ─────────────────────────────────────────────────────── -->
+    <section id="about" class="section section-pad">
+      <div class="container service-content">
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <span class="kicker">Our Story</span>
+            <h2>A calm space, <span class="accent">meticulous</span> hands.</h2>
+            <p>Moonlight Nails and Spa was built on a simple idea — that a nail appointment should feel like a small escape. A quiet, spotless room. Unhurried care. And work so precise you forget it was ever a service.</p>
+            <p>From a flawless gel finish to freehand nail art, every set is shaped to your hands and your taste. No rush, no templates — just considered, lasting beauty.</p>
+            <div class="about-stats">
+              <div class="stat"><div class="n">10<span style="font-size:1.4rem">+</span></div><div class="l">Years of craft</div></div>
+              <div class="stat"><div class="n">4.9</div><div class="l">Average rating</div></div>
+              <div class="stat"><div class="n">100%</div><div class="l">Sterilised tools</div></div>
+            </div>
+          </div>
+          <div class="about-media reveal">
+            <div class="frame">
+              <img src={asset('images/about-nails.webp')} alt="A fresh, glossy nude manicure" loading="lazy" />
+            </div>
+            <div class="badge">Pampered, not rushed.<span>Our promise</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SERVICES ──────────────────────────────────────────────────── -->
+    <section id="services" class="section alt section-pad has-videos">
+      <div class="svc-videos" aria-hidden="true">
+        <video class="svc-video" autoplay muted loop playsinline preload="metadata">
+          <source src={asset('videos/video_1.mp4')} type="video/mp4" />
+        </video>
+        <video class="svc-video" autoplay muted loop playsinline preload="metadata">
+          <source src={asset('videos/video_2.mp4')} type="video/mp4" />
+        </video>
+        <video class="svc-video" autoplay muted loop playsinline preload="metadata">
+          <source src={asset('videos/video_3.mp4')} type="video/mp4" />
+        </video>
+      </div>
+      <div class="container">
+        <div class="section-head service-reveal-head">
+          <span class="kicker centered">The Menu</span>
+          <h2 class="service-title" data-word-reveal data-accent-words="nail,salon">A full-service nail salon</h2>
+          <p class="service-intro" data-word-reveal>Every treatment includes a complimentary soak, cuticle care, and your choice of finish.</p>
+          <div class="rule"></div>
+        </div>
+        <div class="svc-grid">
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 21c0-4 2-7 6-7s6 3 6 7"/><path d="M9 14V7a3 3 0 0 1 6 0v7"/></svg></div>
+            <h3>Manicure</h3>
+            <p>Shape, cuticle care, massage and a flawless polish — the timeless classic.</p>
+            <div class="price">from €25</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 11c0-3 2-6 5-6 2 0 3 1 3 3 0 3-2 4-2 6 0 2 2 3 4 3"/><path d="M5 11c-1 2-1 5 1 7s6 2 9 1"/></svg></div>
+            <h3>Spa Pedicure</h3>
+            <p>Exfoliating scrub, warm towel wrap and a nourishing finish for tired feet.</p>
+            <div class="price">from €45</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="6" height="12" rx="2"/><path d="M10 9V6h4v3M11 3h2v3h-2z"/></svg></div>
+            <h3>Gel &amp; BIAB</h3>
+            <p>Builder-in-a-bottle strength with a high-gloss, chip-resistant gel finish.</p>
+            <div class="price">from €40</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg></div>
+            <h3>Acrylic Sets</h3>
+            <p>Durable, custom-sculpted extensions in any length and shape you imagine.</p>
+            <div class="price">from €55</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h12l-2 5H8z"/><path d="M9 8v9a3 3 0 0 0 6 0V8"/></svg></div>
+            <h3>Shellac</h3>
+            <p>Quick-dry hybrid colour — two weeks of flawless wear in under an hour.</p>
+            <div class="price">from €30</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21l9-9M14 10l4-4a2.8 2.8 0 0 0-4-4l-4 4"/><path d="M12 8l4 4"/></svg></div>
+            <h3>Nail Art</h3>
+            <p>Hand-painted detail, foils, gems and seasonal designs — bring your vision.</p>
+            <div class="price">from €10</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></div>
+            <h3>Soak-off &amp; Repair</h3>
+            <p>Gentle removal and nourishing treatment to restore tired, natural nails.</p>
+            <div class="price">from €15</div>
+          </div>
+          <div class="svc-card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.6 4.2L18 7l-3 3 1 4.5L12 12l-4 2.5L9 10 6 7l4.4-.8z"/></svg></div>
+            <h3>Occasion Sets</h3>
+            <p>Wedding, party or event-ready nails, designed bespoke to your look.</p>
+            <div class="price">on request</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:30px;" class="service-note reveal">
+          <span class="demo-note"><span class="i" title="In the live site this links to your full price list / PDF menu.">i</span> Prices are placeholders — fully editable in the live site.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GALLERY ───────────────────────────────────────────────────── -->
+    <section id="gallery" class="section section-pad">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker centered">Our Work</span>
+          <h2>The <span class="accent">gallery</span></h2>
+          <p>A selection of recent sets — from quiet elegance to bold, custom designs.</p>
+          <div class="rule"></div>
+        </div>
+        <div class="gallery-velocity reveal" data-gallery-velocity aria-label="Recent nail sets">
+          {galleryRows.map((row) => (
+            <div class="velocity-row" data-direction={row.direction}>
+              <div class="velocity-track">
+                {Array.from({ length: galleryRepeats }, (_, repeatIndex) => (
+                  <div class="velocity-set" aria-hidden={repeatIndex > 0 ? 'true' : undefined}>
+                    {row.images.map((image) => (
+                      <figure class="g-item">
+                        <img src={image.src} alt={repeatIndex === 0 ? image.alt : ''} loading="eager" decoding="async" />
+                        <figcaption class="cap">{image.caption}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="gallery-note reveal">
+          <span class="demo-note"><span class="i" title="Swap in your own Instagram feed or a curated set of photos here.">i</span> Drop your own photos here — this is your gallery.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── REVIEWS ───────────────────────────────────────────────────── -->
+    <section id="reviews" class="section alt section-pad">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker centered">Kind Words</span>
+          <h2>Loved by our <span class="accent">regulars</span></h2>
+          <div class="rule"></div>
+        </div>
+        <div class="reviews reveal">
+          <div class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>"The most relaxing nail experience I've had. I bring in a photo and they simply make it — every single time."</blockquote>
+            <cite>— Aoife M.</cite>
+          </div>
+          <div class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>"Professional and genuinely warm. My BIAB has never lasted longer, and the salon is spotless."</blockquote>
+            <cite>— Grá­inne D.</cite>
+          </div>
+          <div class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>"Booked online in under a minute. The pedicure is a game-changer — I've already rebooked for next month."</blockquote>
+            <cite>— Niamh K.</cite>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BOOKING ───────────────────────────────────────────────────── -->
+    <section id="book" class="section section-pad">
+      <div class="container">
+        <div class="book-wrap">
+          <div class="book-copy reveal">
+            <span class="kicker">Reservations</span>
+            <h2>Book your <span class="accent">appointment</span></h2>
+            <p>Choose a time that suits you, pick your treatment and your specialist, and you're set. It takes less than a minute.</p>
+            <div class="book-feats">
+              <div class="book-feat">
+                <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span>
+                <span class="ft"><b>Live calendar.</b> See real availability and pick an open slot instantly.</span>
+              </div>
+              <div class="book-feat">
+                <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+                <span class="ft"><b>Choose your specialist.</b> Request a favourite technician or any available.</span>
+              </div>
+              <div class="book-feat">
+                <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></span>
+                <span class="ft"><b>Instant confirmation.</b> Optional deposits &amp; reminders can be enabled.</span>
+              </div>
+            </div>
+            <button class="btn btn-gold" data-book>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+              Open the booking calendar
+            </button>
+            <div style="margin-top:18px;">
+              <span class="demo-note"><span class="i" title="In the live site this connects to your real calendar (Fresha, Square, Google Calendar) and optional Stripe/Apple Pay deposits.">i</span> Demo booking — no payment is taken and no real appointment is made.</span>
+            </div>
+          </div>
+
+          <div class="book-visual reveal" id="bookVisual" role="button" tabindex="0" aria-label="Open booking calendar">
+            <div class="bv-head">
+              <span class="m" id="bvMonth">Month</span>
+              <span class="nav-mini">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 6l-6 6 6 6"/></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+            <div class="mini-cal" id="miniCal"></div>
+            <div style="text-align:center;margin-top:16px;font-size:0.74rem;color:var(--champagne-d);letter-spacing:0.04em;">Tap to choose your date →</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LOCATION ──────────────────────────────────────────────────── -->
+    <section id="location" class="section alt section-pad">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker centered">Find Us</span>
+          <h2>Visit the <span class="accent">salon</span></h2>
+          <div class="rule"></div>
+        </div>
+        <div class="loc-grid">
+          <div class="loc-map reveal">
+            <div class="pin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <div><strong>Carlow</strong><br/>Co. Carlow · Ireland</div>
+              <div style="margin-top:10px;"><a href="https://www.google.com/maps/search/Moonlight+Nail+Spa+Carlow" target="_blank" rel="noopener">Open in Google Maps →</a></div>
+              <div style="margin-top:14px;"><span class="demo-note"><span class="i" title="Embed a live Google Maps iframe with your real address here.">i</span> Map placeholder — swap for a live map.</span></div>
+            </div>
+          </div>
+          <div class="loc-info reveal">
+            <h3>Opening Hours</h3>
+            <table class="hours">
+              <tr><td>Monday</td><td>09:00 – 19:00</td></tr>
+              <tr><td>Tuesday</td><td>09:00 – 19:00</td></tr>
+              <tr><td>Wednesday</td><td>09:00 – 19:00</td></tr>
+              <tr><td>Thursday</td><td>09:00 – 19:00</td></tr>
+              <tr><td>Friday</td><td>09:00 – 19:00</td></tr>
+              <tr><td>Saturday</td><td>10:00 – 18:00</td></tr>
+              <tr class="closed"><td>Sunday</td><td>Closed</td></tr>
+            </table>
+            <div class="loc-contact">
+              <a href="tel:+353892555370"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.5a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg> 089 255 5370</a>
+              <a href="https://www.instagram.com/moonlight_nail_spa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @moonlight_nail_spa</a>
+              <a href="mailto:Moonlightnailspa@yahoo.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg> Moonlightnailspa@yahoo.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ FINAL CTA ════════════════════════════════════════════════════ -->
+  <section class="final">
+    <div class="container">
+      <span class="kicker centered">Ready when you are</span>
+      <h2>Your next set is <em style="font-style:italic;color:var(--champagne)">waiting</em>.</h2>
+      <p>Book online in under a minute — or drop by and say hello. We'd love to have you.</p>
+      <div class="cta-row">
+        <button class="btn btn-gold" data-book>Book an Appointment</button>
+        <a class="btn btn-ghost" href="tel:+353892555370">Call the Salon</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ═══════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="fdiv"></div>
+      <div class="fbrand">Moonlight Nails and Spa</div>
+      <div class="fsoc">
+        <a href="https://www.instagram.com/moonlight_nail_spa" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://www.facebook.com/p/Moonlight-nail-spa-100065363355123/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 22V10a3 3 0 0 1 3-3M8 13h6"/></svg></a>
+        <a href="mailto:Moonlightnailspa@yahoo.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
+      </div>
+      <small>© <span id="yr"></span> Moonlight Nails and Spa · Carlow, Ireland · A demo template — photos, prices &amp; some details are placeholders.</small>
+    </div>
+  </footer>
+
+  <!-- ══ DEMO BANNER ══════════════════════════════════════════════════ -->
+  <div class="demo-banner" id="demoBanner">
+    <span><b>Interactive demo.</b> Try “Book Now” — it all works.</span>
+    <button class="x" id="demoClose" aria-label="Dismiss">✕</button>
+  </div>
+
+  <!-- ══ BOOKING MODAL ════════════════════════════════════════════════ -->
+  <div class="bk-overlay" id="bkOverlay" role="dialog" aria-modal="true" aria-label="Book an appointment" data-lenis-prevent>
+    <div class="bk-modal" id="bkModal">
+      <div class="bk-head">
+        <div class="t">
+          <span class="mark">M</span>
+          <span class="ttl">Book an Appointment<small>Moonlight Nails and Spa</small></span>
+        </div>
+        <button class="bk-close" id="bkClose" aria-label="Close booking">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="bk-steps" id="bkSteps"></div>
+      <div class="bk-body" id="bkBody"></div>
+      <div class="bk-foot" id="bkFoot"></div>
+    </div>
+  </div>
+  <script src="../scripts/site.js"></script>
+</body>
+</html>
