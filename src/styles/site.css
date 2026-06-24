@@ -415,6 +415,8 @@
     footer .fsoc svg { width: 20px; height: 20px; }
     footer small { font-size: 0.76rem; color: #6f675f; }
     footer a.inline { color: var(--champagne); }
+    footer .faddr { font-style: normal; font-size: 0.82rem; color: #9a9088; margin-bottom: 10px; line-height: 1.5; }
+    footer .faddr a { color: var(--champagne); }
 
     /* ══ DEMO NOTES ═════════════════════════════════════════════════════ */
     .demo-note {
