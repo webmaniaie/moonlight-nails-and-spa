@@ -318,14 +318,18 @@
        JavaScript supplies the exact rail width after measuring one set.
     */
     .velocity-track { display: block; white-space: nowrap; font-size: 0; line-height: 0; will-change: transform; }
-    .velocity-set { display: inline-flex; vertical-align: top; gap: var(--gallery-gap); padding-right: var(--gallery-gap); flex: none; }
-    .g-item { position: relative; z-index: 0; overflow: hidden; border-radius: 4px; flex: 0 0 clamp(220px, 26vw, 330px); min-width: clamp(220px, 26vw, 330px); aspect-ratio: 4/5; background: var(--porcelain-2); box-shadow: 0 18px 40px -30px rgba(43,39,35,0.45); }
+    .velocity-set { display: inline-flex; align-items: flex-start; vertical-align: top; gap: var(--gallery-gap); padding-right: var(--gallery-gap); flex: none; }
+    /* Height is set explicitly (not just via aspect-ratio) because Safari/WebKit
+       collapses an aspect-ratio-derived height to ~0 for a flex item in this
+       inline-flex row, which left the whole gallery blank in Safari while it
+       rendered fine in Chrome. The height clamp mirrors the width clamp × 5/4. */
+    .g-item { position: relative; z-index: 0; overflow: hidden; border-radius: 4px; flex: 0 0 clamp(220px, 26vw, 330px); min-width: clamp(220px, 26vw, 330px); aspect-ratio: 4/5; height: clamp(275px, 32.5vw, 412.5px); background: var(--porcelain-2); box-shadow: 0 18px 40px -30px rgba(43,39,35,0.45); }
     .g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.22,1,.36,1), filter .45s ease; }
     .g-item:hover img { transform: scale(1.06); filter: saturate(1.08); }
     .g-item .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 22px 20px; background: linear-gradient(to top, rgba(27,24,21,0.62), transparent); color: #fff; font-family: var(--ff-serif); font-style: italic; font-size: 1.05rem; opacity: 0; transform: translateY(10px); transition: opacity .4s, transform .4s; }
     .g-item:hover .cap { opacity: 1; transform: translateY(0); }
     .gallery-note { text-align: center; margin-top: 26px; }
-    @media (max-width: 760px) { .gallery-velocity { --gallery-gap: 12px; } .g-item { flex-basis: clamp(180px, 58vw, 280px); min-width: clamp(180px, 58vw, 280px); } }
+    @media (max-width: 760px) { .gallery-velocity { --gallery-gap: 12px; } .g-item { flex-basis: clamp(180px, 58vw, 280px); min-width: clamp(180px, 58vw, 280px); height: clamp(225px, 72.5vw, 350px); } }
 
     /* ══ REVIEWS ════════════════════════════════════════════════════════ */
     .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
@@ -365,11 +369,19 @@
     .loc-map {
       border-radius: 4px; overflow: hidden; min-height: 360px; position: relative;
       background: linear-gradient(150deg, #eee7db, #ded0b8); border: 1px solid var(--line);
-      display: grid; place-items: center; text-align: center; color: var(--stone);
     }
-    .loc-map .pin { color: var(--champagne-d); }
-    .loc-map .pin svg { width: 40px; height: 40px; margin-bottom: 10px; }
-    .loc-map a { color: var(--champagne-d); border-bottom: 1px solid var(--champagne); }
+    .loc-map-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .loc-map-link {
+      position: absolute; left: 14px; bottom: 14px; z-index: 1;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px; border-radius: 999px;
+      background: rgba(251,250,247,0.94); color: var(--charcoal);
+      font-size: 0.82rem; font-weight: 500; line-height: 1;
+      box-shadow: 0 10px 30px -12px rgba(43,39,35,0.55); backdrop-filter: blur(4px);
+      transition: background .25s ease, transform .25s ease;
+    }
+    .loc-map-link:hover { background: #fff; transform: translateY(-1px); }
+    .loc-map-link svg { width: 16px; height: 16px; color: var(--champagne-d); flex: none; }
     .loc-info h3 { font-size: 1.9rem; margin-bottom: 8px; }
     .hours { width: 100%; margin-top: 8px; border-collapse: collapse; }
     .hours td { padding: 11px 2px; border-bottom: 1px solid var(--line); font-size: 0.92rem; color: var(--stone); }

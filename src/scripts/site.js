@@ -761,6 +761,26 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
       document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
     }
 
+    /* Reveal safety net — independent of GSAP/ScrollTrigger.
+       On mobile (notably iOS Safari and in-app webviews) the pinned hero can
+       throw off ScrollTrigger's position maths, so a section like the gallery
+       could stay stuck at opacity:0. A plain IntersectionObserver guarantees
+       every .reveal still appears once it scrolls into view. Where GSAP already
+       added .in, this is a harmless no-op. */
+    if ('IntersectionObserver' in window) {
+      const revealObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -10% 0px' });
+      document.querySelectorAll('.reveal:not(.in)').forEach(el => revealObserver.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+
     /* ════════════════════════════════════════════════════════════════
        GALLERY VELOCITY — photo rails move only while the visitor scrolls
     ════════════════════════════════════════════════════════════════ */
@@ -794,9 +814,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
       function measure() {
         rows.forEach((row) => {
-          row.loopWidth = row.sourceSet.getBoundingClientRect().width;
-          row.track.style.width = Math.ceil(row.loopWidth * row.track.children.length) + 'px';
-          row.position = row.loopWidth ? row.position % row.loopWidth : 0;
+          const width = row.sourceSet.getBoundingClientRect().width;
+          // On mobile (iOS Safari / in-app webviews) the set can momentarily
+          // report a zero width before layout and images settle. Writing a 0px
+          // track width here would clip every image behind the row's
+          // overflow:hidden and leave the gallery blank, so keep the last good
+          // measurement until a real width is available.
+          if (!width) return;
+          row.loopWidth = width;
+          row.track.style.width = Math.ceil(width * row.track.children.length) + 'px';
+          row.position = row.position % width;
           renderRow(row);
         });
       }
@@ -818,6 +845,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
       measure();
       requestAnimationFrame(measure);
+      // Re-measure once everything that affects the rail width has resolved.
+      // Eager gallery images can still decode after first paint on a slow
+      // mobile connection, which is exactly when the first measurements are
+      // unreliable, so remeasure as each image loads and again on full load.
+      gallery.querySelectorAll('img').forEach((img) => {
+        if (img.complete) return;
+        img.addEventListener('load', measure, { once: true });
+        img.addEventListener('error', measure, { once: true });
+      });
+      window.addEventListener('load', () => { measure(); requestAnimationFrame(measure); });
       window.addEventListener('resize', measure, { passive: true });
       window.addEventListener('scroll', () => applyScroll(window.scrollY), { passive: true });
     })();
